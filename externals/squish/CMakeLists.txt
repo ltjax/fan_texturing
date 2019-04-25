@@ -1,11 +1,30 @@
 add_library(squish
   alpha.cpp
+  alpha.h
+  ChangeLog
   clusterfit.cpp
+  clusterfit.h
   colourblock.cpp
+  colourblock.h
   colourfit.cpp
+  colourfit.h
   colourset.cpp
+  colourset.h
+  config.h
   maths.cpp
-  rangefit.cpp)
+  maths.h
+  rangefit.cpp
+  rangefit.h
+  simd.h
+  simd_float.h
+  simd_sse.h
+  simd_ve.h
+  singlecolourfit.cpp
+  singlecolourfit.h
+  singlecolourlookup.inl
+  squish.cpp
+  squish.h
+  )
 
 target_include_directories(squish
   PUBLIC ./)

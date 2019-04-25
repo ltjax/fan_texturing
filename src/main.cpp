@@ -1,5 +1,4 @@
 
-
 #include "RenderWindow.hpp"
 #include <glsk/glsk.hpp>
 #include <iostream>

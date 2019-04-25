@@ -1,8 +1,4 @@
 
-
-
-#ifdef _WIN32
-#define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -188,7 +184,3 @@ bool CFileMonitor::Update()
 	return Listen();
 }
 
-
-#else
-
-#endif

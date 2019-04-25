@@ -1,4 +1,4 @@
-add_executable(fan_texturing_demo
+add_executable(fan_texturing_demo WIN32
   ApplicationKernel.cpp
   ApplicationKernel.hpp
   Caching.cpp
@@ -41,7 +41,24 @@ add_executable(fan_texturing_demo
   UserCamera.cpp
   UserCamera.hpp
   WireframeRenderer.cpp
-  WireframeRenderer.hpp)
+  WireframeRenderer.hpp
+  GLmm/BufferObject.cpp
+  GLmm/BufferObject.hpp
+  GLmm/Framebuffer.cpp
+  GLmm/Framebuffer.hpp
+  GLmm/GL.cpp
+  GLmm/GL.hpp
+  GLmm/Object.cpp
+  GLmm/Object.hpp
+  GLmm/Program.cpp
+  GLmm/Program.hpp
+  GLmm/Shader.cpp
+  GLmm/Shader.hpp
+  GLmm/StateCache.cpp
+  GLmm/StateCache.hpp
+  GLmm/Texture.cpp
+  GLmm/Texture.hpp
+)
 
 
 target_link_libraries(fan_texturing_demo
@@ -57,10 +74,11 @@ target_link_libraries(fan_texturing_demo
   PUBLIC CONAN_PKG::boost_array
   PUBLIC CONAN_PKG::boost_program_options
   PUBLIC CONAN_PKG::boost_asio
-  PUBLIC CONAN_PKG::boost_graph)
+  PUBLIC CONAN_PKG::boost_graph
+  PUBLIC CONAN_PKG::boost_iostreams)
 
 target_compile_options(fan_texturing_demo
-  PUBLIC /wd4267 /wd4996 /wd4101)
+  PUBLIC /wd4267 /wd4996 /wd4101 /wd4244)
 
 target_compile_definitions(fan_texturing_demo
   PUBLIC -D_WIN32_WINDOWS=0x0601 -D_WIN32_WINNT=0x0601)

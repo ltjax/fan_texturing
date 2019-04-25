@@ -11,7 +11,8 @@ add_library(replay
   source/plane3.cpp
   source/quaternion.cpp
 #  source/scalar.cpp
-  source/vector_math.cpp)
+  source/vector_math.cpp
+  )
 
 target_include_directories(replay
   PUBLIC include/)
