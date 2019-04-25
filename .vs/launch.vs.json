@@ -1,0 +1,14 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "fan_texturing_demo.exe (bin\\fan_texturing_demo.exe)",
+      "name": "fan_texturing_demo.exe (bin\\fan_texturing_demo.exe)",
+      "currentDir": "${workspaceRoot}",
+      "args": ["--model", "wobly.obj"]
+    }
+  ]
+}
