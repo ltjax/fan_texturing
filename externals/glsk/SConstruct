@@ -1,0 +1,231 @@
+#!/usr/bin/env python
+import sys
+import os
+import subprocess
+
+
+version = '0.10.0'
+
+# Function to print a short cmdline
+def PrintShortCmdLine(s, target, source, env):
+	cmd = s.split()[0]
+	
+	# Filthy hack because cl does a linebreak itself
+	if cmd == 'cl':
+		sys.stdout.write( cmd + ' ' )
+	else:
+		print cmd, (' and '.join([str(x) for x in target]))
+
+# Builder function to generate pkg-config files
+def BuildPkgConf(target, source, env):
+	
+	input = source[0].path
+	file = open(input, 'r').read()
+	
+	vars = {'@prefix@': env['prefix'],\
+		'@exec_prefix@': '${prefix}/bin',\
+		'@libdir@': '${prefix}/lib',\
+		'@includedir@': '${prefix}/include',\
+		'@VERSION@': env['GLSK_VERSION']}
+	
+	for k, v in vars.iteritems():
+		file = file.replace(k, v)
+	
+	output = target[0].path
+	
+	result = open(output, 'w').write(file)
+
+	return None;
+	
+# Function to check an enviroment var
+def CheckEnviromentVar(context, var):
+	context.Message('Checking for Enviroment variable '+var+'... ')
+	if os.environ.has_key(var):
+		context.Result('yes')
+		return True
+	else:
+		context.Result('no')
+		return False
+		
+# Function to check for a package w/ pkg-config	
+def CheckPkgConfig(context, package):
+	context.Message('Checking for '+package+' with pkg-config... ')
+	
+	if subprocess.call(['pkg-config','--exists',package]) == 0:
+		context.Result('yes')
+		return True
+	else:
+		context.Result('no')
+		return False
+
+
+# Figure out which platform we're running on
+platform = sys.platform
+print '* Platform: ', platform
+
+# Configure options appropriate for this platform
+opts = Options('custom.py')
+
+if platform == 'win32':
+	from win32com.shell import shell, shellcon
+	opts.AddOptions(EnumOption('toolset','The compiler set you want to use','mingw',['msvc','mingw'])) 
+	
+opts.AddOptions(EnumOption('signal','The signal library to be used','',['boost','sigc','']))
+opts.Add('gperf','Command to invoke gperf','gperf')
+
+prefix_default = ''
+
+if platform == 'win32':
+	prefix_default = shell.SHGetPathFromIDList( shell.SHGetSpecialFolderLocation(0, shellcon.CSIDL_PROGRAM_FILES_COMMON) )
+else:
+	prefix_default = '/usr/local'
+	
+opts.Add('prefix','Where to install the libs', prefix_default )
+opts.Add('include', 'Additional include dirs', '')
+opts.Add('lib', 'Additional lib dirs', '')
+        		
+env = Environment(options=opts,ENV = os.environ)
+conf = Configure(env, custom_tests = {'CheckEnviromentVar' : CheckEnviromentVar, 'CheckPkgConfig' : CheckPkgConfig})
+
+if platform == 'win32':
+	env.Tool( env[ 'TOOLSET' ] )
+	
+compiler =  env['CC']
+print '* Compiler: ', compiler
+print '* Prefix:', env['prefix']
+
+# Set compiler specific flags for the GNU compiler
+if compiler == 'gcc':
+	env.Append(CCFLAGS = ['-Wall'] )
+	if ARGUMENTS.get('debug', 0):
+		env.Append(CCFLAGS = ['-g3'])
+		
+	if platform == 'win32':
+		env.Append(CCFLAGS = ['-pipe'])
+		env.Append(LINKFLAGS = '-mwindows -Wl,-u,_WinMain@16 ')
+		env.Append(LIBS = ['opengl32', 'dinput8', 'dxguid', 'glu32'])
+
+	if platform == 'linux2':
+		env.Append(LIBS = ['GL', 'GLU', 'X11', 'Xext', 'Xxf86vm'])
+		env.Append(CCFLAGS = ['-pedantic'] )
+		
+# And for the Microsoft compiler
+if compiler == 'cl':
+	env.Append(CCFLAGS =['/EHsc'])
+	
+# Do we want long compilation lines?
+if not ARGUMENTS.get('VERBOSE', 0):
+	env.Replace(PRINT_CMD_LINE_FUNC = PrintShortCmdLine)
+
+
+# Parse additional command line includes
+includes = env[ 'include' ]
+
+if not len(includes)==0:
+	print '* Additional include paths:'
+	for x in includes.split(';'):
+		print '   ', x
+		env.Append( CPPPATH = [x] )
+
+env.Append(CPPPATH = ['#/include'])
+
+libpaths = env[ 'lib' ]
+
+if not len(libpaths)==0:
+	print '* Additional library paths:'
+	for x in libpaths.split(';'):
+		print '   ', x
+		env.Append( LIBPATH = [x] )
+		
+
+# Do configuration and checks if we're not cleaning or checking the help
+if not '-c' in sys.argv[1:] and not '-h' in sys.argv[1:]:
+
+	if platform == 'win32':
+		if conf.CheckEnviromentVar('GNUWIN32'):
+			env.Append(CPPPATH= [os.environ['GNUWIN32']+'/include'])
+		
+		if compiler == 'cl' and conf.CheckEnviromentVar('INCLUDE'):
+			env.Append( CPPPATH=[x.rstrip('.') for x in os.environ['INCLUDE'].split(';')] )
+			
+		"""if not conf.CheckCXXHeader('GL/glext.h','<>' ):
+			print 'ERROR: Could not locate OpenGL extension header.'
+			Exit(1)"""
+		
+		if not conf.CheckCXXHeader('windows.h','<>'):
+			print 'ERROR: Could not locate winAPI header(s).'
+			Exit(1)
+			
+		"""if not conf.CheckCXXHeader('wincon.h','<>'):
+			print 'ERROR: Could not locate winAPI header(s).'
+			Exit(1)"""
+			
+		if not conf.CheckCXXHeader('dinput.h','<>'):
+			print 'ERROR: Could not locate direct input header(s).'
+			Exit(1)
+			
+	"""print 'Paths: ', env['CPPPATH']"""
+			
+	if not conf.CheckCXXHeader( 'GL/gl.h','<>' ):
+		print 'OpenGL headers must be installed!'
+		Exit(1)
+	
+	if env['signal'] == 'boost':
+		if not conf.CheckCXXHeader('boost/bind.hpp'):
+			print 'Boost.Bind header could not be located.'
+			Exit(1)
+			
+		if not conf.CheckCXXHeader('boost/signals.hpp'):
+			print 'Boost.Signals header could not be located.'
+			Exit(1)
+
+	elif env['signal'] == 'sigc':
+		if not conf.CheckPkgConfig('sigc++-2.0'):
+			print 'sigc++ package could not be located.'
+			Exit(1)
+		else:
+			env.ParseConfig( 'pkg-config --cflags --libs sigc++-2.0' )
+			env.Append( CCFLAGS = ['-D_glsk_use_libsigc_'] )
+	
+	if platform == 'linux2':
+		if not conf.CheckCXXHeader( 'X11/X.h' ):
+			#env.Append(LIBPATH = ['/usr/X11R6/lib'])
+			print 'ERROR: Did not find X11 libraries!'
+			Exit(1)
+	
+
+		
+		
+	
+env = conf.Finish()
+env.Append( GLSK_VERSION = version )
+
+Export( 'env', 'platform' )
+
+	     
+env.Append( BUILDERS = { 'PkgConfBuilder': Builder( action = BuildPkgConf ) })
+
+glskpc = env.PkgConfBuilder('glsk.pc.in')
+
+SConscript(['source/SConscript'])
+
+
+Import('glsk')
+
+if env['PLATFORM'] == 'posix':
+	dest = glsk[0].path.replace('-'+version, '')
+	glskcoredest = File(dest)
+	env.AddPostAction(glsk, 'ln -sf '  + '../$TARGET ' + dest)
+
+
+Default(glsk, glskpc)
+
+env.Install( env['prefix'] + '/lib', [glsk] )
+env.Install( env['prefix'] + '/lib/pkgconfig', [glskpc] )
+env.Install( env['prefix'] + '/include/glsk-'+version+'/glsk', ['include/glsk/glsk.hpp'] )
+env.Alias( 'install', [env['prefix']+'/lib', env['prefix']+'/include'] )
+
+"""SConscript(['samples/SConscript'])"""
+
+Help(opts.GenerateHelpText(env))
+

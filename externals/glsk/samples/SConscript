@@ -1,0 +1,2 @@
+#!/usr/bin/env python
+SConscript( ['basic/SConscript', 'joystick/SConscript' ] )
