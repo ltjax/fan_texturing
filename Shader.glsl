@@ -24,7 +24,7 @@ void main( void )
   
   Scale = Offset.z;
   
-  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+  gl_Position = gl_ModelViewProjectionMatrix * Coord;
 }
 
 [Fragment Shader]
