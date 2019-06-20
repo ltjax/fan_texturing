@@ -8,7 +8,10 @@
       "projectTarget": "fan_texturing_demo.exe (bin\\fan_texturing_demo.exe)",
       "name": "fan_texturing_demo.exe (bin\\fan_texturing_demo.exe)",
       "currentDir": "${workspaceRoot}",
-      "args": ["--model", "wobly.obj"]
+      "args": [
+        "--model",
+        "complex_terrain.obj"
+      ]
     }
   ]
 }

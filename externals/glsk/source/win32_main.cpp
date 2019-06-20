@@ -240,10 +240,10 @@ void glsk::detail::open_console()
 
 	// allocate the console and redirect cout
 	//AllocConsole();
-	if ( AttachConsole( ATTACH_PARENT_PROCESS ) == 0 )
+	//if ( AttachConsole( ATTACH_PARENT_PROCESS ) == 0 )
 		AllocConsole();
 
-	freopen( "CONOUT$", "w", stdout );
+	//freopen( "CONOUT$", "w", stdout );
 
 	flags |= console_is_open;
 }

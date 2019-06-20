@@ -16,6 +16,7 @@ boost_graph/1.68.0@bincrafters/stable
 boost_iostreams/1.68.0@bincrafters/stable
 glew/2.1.0@bincrafters/stable
 libpng/1.6.36@bincrafters/stable
+sdl2/2.0.9@bincrafters/stable
 
 [options]
 boost:shared=False

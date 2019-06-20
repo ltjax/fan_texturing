@@ -3,6 +3,7 @@ add_executable(fan_texturing_demo WIN32
   ApplicationKernel.hpp
   Caching.cpp
   Caching.hpp
+  Common.cpp
   Common.hpp
   Cursor.cpp
   Cursor.hpp
@@ -27,8 +28,8 @@ add_executable(fan_texturing_demo WIN32
   PageScheduler.cpp
   PageScheduler.hpp
   RenderWindow.hpp
-  ShaderTestKernel.cpp
-  ShaderTestKernel.hpp
+#  ShaderTestKernel.cpp
+#  ShaderTestKernel.hpp
 #  ShaderTestMain.cpp
   ShadowmapRenderer.cpp
   ShadowmapRenderer.hpp
@@ -62,7 +63,6 @@ add_executable(fan_texturing_demo WIN32
 
 
 target_link_libraries(fan_texturing_demo
-  PUBLIC glsk
   PUBLIC replay
   PUBLIC threadpool
   PUBLIC squish
@@ -75,7 +75,9 @@ target_link_libraries(fan_texturing_demo
   PUBLIC CONAN_PKG::boost_program_options
   PUBLIC CONAN_PKG::boost_asio
   PUBLIC CONAN_PKG::boost_graph
-  PUBLIC CONAN_PKG::boost_iostreams)
+  PUBLIC CONAN_PKG::boost_iostreams
+  PUBLIC CONAN_PKG::boost_signals
+  PUBLIC CONAN_PKG::sdl2)
 
 target_compile_options(fan_texturing_demo
   PUBLIC /wd4267 /wd4996 /wd4101 /wd4244)

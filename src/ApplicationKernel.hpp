@@ -1,8 +1,6 @@
 
-#ifndef APPLICATION_KERNEL_HPP
-#define APPLICATION_KERNEL_HPP
+#pragma once
 
-#include <glsk/glsk.hpp>
 #include <replay/vector_math.hpp>
 #include "UserCamera.hpp"
 #include "FantexMesh.hpp"
@@ -11,24 +9,25 @@
 #include "GLmm/Framebuffer.hpp"
 #include "Cursor.hpp"
 #include "Misc.hpp"
-
+#include <SDL2/SDL.h>
 
 
 class CApplicationKernel
 {
 public:
-							CApplicationKernel(glsk::window& Wnd,const boost::filesystem::path& Filename );
+							CApplicationKernel(SDL_Window* Wnd, const boost::filesystem::path& Filename );
 							~CApplicationKernel();
 
 	void					OnResize( int w, int h );
-	void					OnMouse( const glsk::mouse_event& msg );
-	void					OnInput( const glsk::input_event& msg );
+	void					OnMouseMove(SDL_MouseMotionEvent* msg);
+    void                    OnMouseButton(SDL_MouseButtonEvent* msg);
+	void					OnKey(SDL_KeyboardEvent msg );
 
 	void					OnIdle();
 
 
 private:
-	glsk::window&			Window;
+    SDL_Window* 			Window;
 
 	void					OnPrintScreen();
 	void					OnSelectColor();
@@ -78,4 +77,3 @@ private:
 #endif
 };
 
-#endif // APPLICATION_KERNEL_HPP

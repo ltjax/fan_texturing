@@ -8,11 +8,11 @@
 #include <replay/buffer.hpp>
 #include "GLmm/Framebuffer.hpp"
 #include <boost/bind.hpp>
-#include <glsk/glsk.hpp>
 #include <squish.h>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
+#include <chrono>
 
 namespace {
 	vec2 vabs( const vec2& arg )
@@ -114,13 +114,13 @@ CTextureWriter::GenerateNode( uint Level, uint Index, byte* Blocks,
 		for ( uint i=0;i<4; ++i )
 			Children[i] = GenerateNode( Level-1, Index | (i<<((Level-1)*2)), Blocks, Pool, Target );
 
-		StartTime = glsk::get_time();
+		StartTime = GetTime();
 
 		AlphaDownsampleRgba( *(Children[0]), *(Children[1]), *(Children[2]), *(Children[3]), *Result );
 	}
 	else
 	{
-		StartTime = glsk::get_time();
+		StartTime = GetTime();
 
 		// Render a leaf in the GL
 		const std::vector<vec3>& Coord =
@@ -136,7 +136,7 @@ CTextureWriter::GenerateNode( uint Level, uint Index, byte* Blocks,
 		//Result->save_to_file( "Decomp"+boost::lexical_cast<std::string>(Index)+".png" );
 	}
 
-	double MiddleTime = glsk::get_time();
+	double MiddleTime = GetTime();
 	double MiddleDelta = MiddleTime-StartTime;
 
 	if ( Level > 0 )
@@ -151,14 +151,14 @@ CTextureWriter::GenerateNode( uint Level, uint Index, byte* Blocks,
 
 	ParallelCompressImage( Result, ImageTarget, CompressionFlags, Pool, Pool.size() );
 
-	CompressionTime += glsk::get_time()-MiddleTime;
+	CompressionTime += GetTime()-MiddleTime;
 
 	return Result;
 }
 
 void CTextureWriter::operator()( const boost::filesystem::path& Filename )
 {
-	double StartTime = glsk::get_time();
+	double StartTime = GetTime();
 
 	RenderingTime = 0.0;
 	DownsamplingTime = 0.0;
@@ -235,7 +235,7 @@ void CTextureWriter::operator()( const boost::filesystem::path& Filename )
 	GLmm::Program::Disable();
 	glActiveTexture( GL_TEXTURE0 );
 
-	double TotalTime = glsk::get_time()-StartTime;
+	double TotalTime = GetTime()-StartTime;
 	std::cout << "Wrote texture in " << TotalTime << " seconds." << std::endl;
 	std::cout << "- Rendering time: " << RenderingTime << std::endl;
 	std::cout << "- Downsampling time: " << DownsamplingTime << std::endl;
