@@ -16,7 +16,7 @@
 #include "TSM.hpp"
 #include "GLSLUtils.hpp"
 #include "ImportObj.hpp"
-#include <SDL2/SDL_syswm.h>
+//#include <SDL2/SDL_syswm.h>
 
 
 namespace {
@@ -188,7 +188,7 @@ void CApplicationKernel::LoadModel(const boost::filesystem::path& Filename,
 void CApplicationKernel::OnMouseMove(SDL_MouseMotionEvent* msg)
 {
     auto x = msg->x;
-    auto y = msg->y;
+    auto y = Height - msg->y;
 
     Camera.OnMouseMove(x, y);
 
@@ -233,130 +233,132 @@ void CApplicationKernel::OnMouseMove(SDL_MouseMotionEvent* msg)
 void CApplicationKernel::OnMouseButton(SDL_MouseButtonEvent* msg)
 {
     if (msg->button != 1)
-        Camera.OnMouseButton(msg->x, msg->y, msg->button, msg->state == SDL_PRESSED);
+        Camera.OnMouseButton(msg->x, Height - msg->y, msg->button, msg->state == SDL_PRESSED);
     else
         DoDraw = msg->state == SDL_PRESSED;
 }
-//
-//void CApplicationKernel::OnInput(const glsk::input_event& Msg)
-//{
-//    if (Msg.get_type() == glsk::key &&
-//        Msg.get_identifier() == glsk::get_keycode("Space"))
-//    {
-//        DoDraw = Msg.get_value() != 0;
-//        return;
-//    }
-//
-//    // Ignore everything but KeyDown events
-//    if (Msg.get_type() != glsk::key || !Msg.get_value())
-//        return;
-//
-//    // Quit the application?
-//    if (Msg.get_identifier() == glsk::get_keycode("Escape"))
-//    {
-//        glsk::main::quit();
-//        return;
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("Return"))
-//    {
-//        OnSelectColor();
-//        return;
-//    }
-//
-//    // Draw the tile cache?
-//    if (Msg.get_identifier() == glsk::get_keycode("c"))
-//    {
-//        DrawCache = !DrawCache;
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("e"))
-//    {
-//        bool IsEditable = !Renderer->GetEditable();
-//        Renderer->SetEditable(IsEditable);
-//
-//        if (IsEditable)
-//        {
-//            std::cout << "Switched to editable mode." << std::endl;
-//        }
-//        else
-//        {
-//            std::cout << "Switched to render mode." << std::endl;
-//            Cursor.SetVisible(false);
-//        }
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("w"))
-//    {
-//        if (!WireframeRenderer)
-//            WireframeRenderer.reset(new CWireframeRenderer(Mesh));
-//
-//        if (ShowWireframe)
-//        {
-//            if (!WireframeRenderer->GetOverlay())
-//            {
-//                WireframeRenderer->SetOverlay(true);
-//            }
-//            else
-//            {
-//                if (!WireframeRenderer->GetRenderTiles())
-//                    WireframeRenderer->SetRenderTiles(true);
-//                else
-//                    ShowWireframe = false;
-//            }
-//        }
-//        else
-//        {
-//            WireframeRenderer->SetOverlay(false);
-//            WireframeRenderer->SetRenderTiles(false);
-//            ShowWireframe = true;
-//        }
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("i"))
-//        CacheScale /= 2.f;
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("k"))
-//        CacheScale *= 2.f;
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("o"))
-//        Cursor.SetRadius(Cursor.GetRadius() * 1.2f);
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("l"))
-//        Cursor.SetRadius(Cursor.GetRadius() / 1.2f);
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("b"))
-//    {
-//        if (Renderer->GetSmoothBlend())
-//            std::cout << "Disabling smooth fan blending." << std::endl;
-//        else
-//            std::cout << "Enabling smooth fan blending." << std::endl;
-//
-//        Renderer->SetSmoothBlend(!Renderer->GetSmoothBlend());
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("PgUp"))
-//    {
-//        float Bias = std::min(Renderer->GetBias() + 0.05f, 1.5f);
-//        Renderer->SetBias(Bias);
-//
-//        std::cout << "Bias is: " << Bias << std::endl;
-//
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("PgDn"))
-//    {
-//        float Bias = std::max(Renderer->GetBias() - 0.05f, 0.0f);
-//        Renderer->SetBias(Bias);
-//
-//        std::cout << "Bias is: " << Bias << std::endl;
-//    }
-//
-//    if (Msg.get_identifier() == glsk::get_keycode("p"))
-//    {
-//        OnPrintScreen();
-//    }
-//}
+
+void CApplicationKernel::OnKey(SDL_KeyboardEvent* Msg)
+{
+    auto Key = Msg->keysym.sym;
+    auto Pressed = Msg->state == SDL_PRESSED;
+
+    if (Key == SDL_GetKeyFromName("Space"))
+    {
+        DoDraw = Pressed;
+        return;
+    }
+
+    // Ignore everything but KeyDown events
+    if (!Pressed)
+        return;
+
+    // Quit the application?
+    if (Key == SDL_GetKeyFromName("Escape"))
+    {
+        SDL_Quit();
+        return;
+    }
+
+    if (Key == SDL_GetKeyFromName("Return"))
+    {
+        OnSelectColor();
+        return;
+    }
+
+    // Draw the tile cache?
+    if (Key == SDL_GetKeyFromName("c"))
+    {
+        DrawCache = !DrawCache;
+    }
+
+    if (Key == SDL_GetKeyFromName("e"))
+    {
+        bool IsEditable = !Renderer->GetEditable();
+        Renderer->SetEditable(IsEditable);
+
+        if (IsEditable)
+        {
+            std::cout << "Switched to editable mode." << std::endl;
+        }
+        else
+        {
+            std::cout << "Switched to render mode." << std::endl;
+            Cursor.SetVisible(false);
+        }
+    }
+
+    if (Key == SDL_GetKeyFromName("w"))
+    {
+        if (!WireframeRenderer)
+            WireframeRenderer.reset(new CWireframeRenderer(Mesh));
+
+        if (ShowWireframe)
+        {
+            if (!WireframeRenderer->GetOverlay())
+            {
+                WireframeRenderer->SetOverlay(true);
+            }
+            else
+            {
+                if (!WireframeRenderer->GetRenderTiles())
+                    WireframeRenderer->SetRenderTiles(true);
+                else
+                    ShowWireframe = false;
+            }
+        }
+        else
+        {
+            WireframeRenderer->SetOverlay(false);
+            WireframeRenderer->SetRenderTiles(false);
+            ShowWireframe = true;
+        }
+    }
+
+    if (Key == SDL_GetKeyFromName("i"))
+        CacheScale /= 2.f;
+
+    if (Key == SDL_GetKeyFromName("k"))
+        CacheScale *= 2.f;
+
+    if (Key == SDL_GetKeyFromName("o"))
+        Cursor.SetRadius(Cursor.GetRadius() * 1.2f);
+
+    if (Key == SDL_GetKeyFromName("l"))
+        Cursor.SetRadius(Cursor.GetRadius() / 1.2f);
+
+    if (Key == SDL_GetKeyFromName("b"))
+    {
+        if (Renderer->GetSmoothBlend())
+            std::cout << "Disabling smooth fan blending." << std::endl;
+        else
+            std::cout << "Enabling smooth fan blending." << std::endl;
+
+        Renderer->SetSmoothBlend(!Renderer->GetSmoothBlend());
+    }
+
+    if (Key == SDL_GetKeyFromName("PageUp"))
+    {
+        float Bias = std::min(Renderer->GetBias() + 0.05f, 1.5f);
+        Renderer->SetBias(Bias);
+
+        std::cout << "Bias is: " << Bias << std::endl;
+
+    }
+
+    if (Key == SDL_GetKeyFromName("PageDown"))
+    {
+        float Bias = std::max(Renderer->GetBias() - 0.05f, 0.0f);
+        Renderer->SetBias(Bias);
+
+        std::cout << "Bias is: " << Bias << std::endl;
+    }
+
+    if (Key == SDL_GetKeyFromName("p"))
+    {
+        OnPrintScreen();
+    }
+}
 
 void CApplicationKernel::OnResize(int w, int h)
 {

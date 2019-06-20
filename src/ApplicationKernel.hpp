@@ -21,7 +21,7 @@ public:
 	void					OnResize( int w, int h );
 	void					OnMouseMove(SDL_MouseMotionEvent* msg);
     void                    OnMouseButton(SDL_MouseButtonEvent* msg);
-	void					OnKey(SDL_KeyboardEvent msg );
+	void					OnKey(SDL_KeyboardEvent* Msg);
 
 	void					OnIdle();
 

@@ -23,9 +23,6 @@ class CRenderWindow
 public:
 	void OnCreate( SDL_Window* Window, int w, int h, boost::filesystem::path Filename )
 	{
-		// Select the rendering contenxt and init GLEW
-		//select_rc();
-
 		const char *GLVersionString = (const char*)glGetString(GL_VERSION);
 		GLMM_CHECK();
 
@@ -37,46 +34,17 @@ public:
 		std::cout << "GLEW initialized..." << std::endl;
 		GLMM_CHECK();
 
-		//try {
-
-			// Create and init the kernel
-			Kernel.reset( new T(Window,Filename) );
-			Kernel->OnResize(w,h);
-
-			// Bind signals to the kernel
-			//signal_configure().connect( boost::bind( &T::OnResize, Kernel.get(), _1, _2 ) );
-			//signal_mouse().connect( boost::bind( &T::OnMouse, Kernel.get(), _1 ) );
-			//signal_input().connect( boost::bind( &T::OnInput, Kernel.get(), _1 ) );
-		//}
-		//catch( std::runtime_error& x )
-		//{
-		//	glsk::error_box( x.what() );
-		//	throw glsk::unsuccessful();
-		//}
-		//catch( ... )
-		//{
-		//	glsk::error_box( "Unknown error during initialization!" );
-		//	throw glsk::unsuccessful();
-		//}
+		Kernel.reset( new T(Window,Filename) );
+		Kernel->OnResize(w,h);
 	}
 
 	void OnDestroy()
 	{
-		//signal_configure().disconnect_all_slots();
-		//signal_mouse().disconnect_all_slots();
-		//signal_input().disconnect_all_slots();
-
 		Kernel.reset();
 	}
 
 	CRenderWindow( boost::filesystem::path Filename ) : Filename(Filename)
 	{
-		typedef CRenderWindow<T> SelfType;
-		
-		// bind basic signals;
-		//signal_create().connect( boost::bind( &SelfType::OnCreate, this, _1, _2, Filename ) );
-		//signal_destroy().connect( boost::bind( &SelfType::OnDestroy, this ) );
-		//signal_close().connect( &glsk::main::quit );
 	}
 
     bool PumpMessages()
@@ -88,6 +56,26 @@ public:
             {
                 case SDL_QUIT:
                     return false;
+
+                case SDL_KEYDOWN:
+                    Kernel->OnKey(&SDLEvent.key);
+                    break;
+
+                case SDL_KEYUP:
+                    Kernel->OnKey(&SDLEvent.key);
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    Kernel->OnMouseButton(&SDLEvent.button);
+                    break;
+
+                case SDL_MOUSEBUTTONUP:
+                    Kernel->OnMouseButton(&SDLEvent.button);
+                    break;
+
+                case SDL_MOUSEMOTION:
+                    Kernel->OnMouseMove(&SDLEvent.motion);
+                    break;
             }
 
         }
@@ -123,6 +111,8 @@ public:
 			Kernel->OnIdle();
             SDL_GL_SwapWindow(Window);
 		}
+
+        Kernel.reset();
 	}
 
 private:

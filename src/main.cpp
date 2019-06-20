@@ -79,24 +79,12 @@ int main( int argc, char **argv )
 	std::cout << "Initializing window..." << std::endl;
 
     try {
-        // select our window's config
-   //     glsk::config cfg( glsk::config::draw_to_window | glsk::config::doublebuffer |
-            //glsk::config::color_bits_set | glsk::config::depth_bits_set | glsk::config::multisample, 32, 24, 0, 8,
-            //3,2,0);
-
-        // open the window handlers
-
-        // create our window object using that config
         CRenderWindow<CApplicationKernel> RenderWindow{ boost::filesystem::path(ModelName) };
 
-        RenderWindow.Run(1280, 1024, "Fan Texturing Demo");
-
         // run the application
+        RenderWindow.Run(1600, 900, "Fan Texturing Demo");
+
     }
-	//catch( glsk::unsuccessful )
-	//{
-	//	// Just ignore this, should be handled earlier
-	//}
 	catch( std::runtime_error& x )
 	{
         return 1;

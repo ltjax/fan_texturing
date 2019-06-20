@@ -13,8 +13,8 @@ add_executable(fan_texturing_demo WIN32
   FantexMesh.hpp
   FantexRenderer.cpp
   FantexRenderer.hpp
-  FileMonitor.cpp
-  FileMonitor.hpp
+#  FileMonitor.cpp
+#  FileMonitor.hpp
   GLSLUtils.cpp
   GLSLUtils.hpp
   ImportObj.cpp
@@ -76,7 +76,6 @@ target_link_libraries(fan_texturing_demo
   PUBLIC CONAN_PKG::boost_asio
   PUBLIC CONAN_PKG::boost_graph
   PUBLIC CONAN_PKG::boost_iostreams
-  PUBLIC CONAN_PKG::boost_signals
   PUBLIC CONAN_PKG::sdl2)
 
 target_compile_options(fan_texturing_demo
