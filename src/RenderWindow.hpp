@@ -10,12 +10,12 @@
 #include <boost/scoped_ptr.hpp>
 #include "GLmm/GL.hpp"
 #include <SDL2/SDL.h>
+
 using replay::vector2i;
 using replay::vector2f;
 using replay::vector3f;
 using replay::affinity;
 using replay::matrix4;
-using boost::scoped_ptr;
 
 template <class T>
 class CRenderWindow
@@ -116,7 +116,7 @@ public:
 	}
 
 private:
-	scoped_ptr<T>	Kernel;
+	std::unique_ptr<T>      Kernel;
     boost::filesystem::path Filename;
 };
 
