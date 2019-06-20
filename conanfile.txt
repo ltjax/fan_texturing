@@ -6,7 +6,6 @@ boost_date_time/1.68.0@bincrafters/stable
 boost_array/1.68.0@bincrafters/stable
 boost_utility/1.68.0@bincrafters/stable
 boost_tuple/1.68.0@bincrafters/stable
-boost_signals/1.68.0@bincrafters/stable
 boost_math/1.68.0@bincrafters/stable
 boost_range/1.68.0@bincrafters/stable
 boost_assign/1.68.0@bincrafters/stable
