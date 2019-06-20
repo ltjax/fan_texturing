@@ -1,6 +1,5 @@
 
 #include "RenderWindow.hpp"
-#include <glsk/glsk.hpp>
 #include <iostream>
 #include <boost/bind.hpp>
 #include <replay/vector_math.hpp>
@@ -29,6 +28,13 @@
 #include <windows.h>
 
 
+// figure out the platform
+#if defined( _WIN32 )
+#  define PLATFORM_WIN32
+#else
+#  define PLATFORM_LINUX
+#endif
+
 int WINAPI WinMain( HINSTANCE hinstance, HINSTANCE hlastinstance, PSTR cmdline, int iCmdShow )
 #else
 int main( int argc, char **argv )
@@ -54,11 +60,11 @@ int main( int argc, char **argv )
 		;
 		po::variables_map VariableMap;
 
-#ifdef GLSK_PLATFORM_WIN32
+#ifdef PLATFORM_WIN32
 		// Parsing on Win32 is a little more complicated, since we first have to split the args up
 		std::vector<std::string> Args = po::split_winmain(cmdline);
 		po::store(po::command_line_parser(Args).options(Desc).run(), VariableMap);
-#elif GLSK_PLATFORM_LINUX
+#elif PLATFORM_LINUX
 		po::store(po::parse_command_line( Argc, Argv, Desc), VariableMap );
 #else
 #error Platform not supported.
@@ -73,30 +79,16 @@ int main( int argc, char **argv )
 	std::cout << "Initializing window..." << std::endl;
 
     try {
-        // select our window's config
-        glsk::config cfg( glsk::config::draw_to_window | glsk::config::doublebuffer |
-			glsk::config::color_bits_set | glsk::config::depth_bits_set | glsk::config::multisample, 32, 24, 0, 8,
-			3,2,0);
-		
-		// open the window handlers
+        CRenderWindow<CApplicationKernel> RenderWindow{ boost::filesystem::path(ModelName) };
 
-		// create our window object using that config
-		CRenderWindow<CApplicationKernel> RenderWindow( cfg, boost::filesystem::path(ModelName) );
-		RenderWindow.set_size(1280,1024);
+        // run the application
+        RenderWindow.Run(1600, 900, "Fan Texturing Demo");
 
-		RenderWindow.Run( "Fan Texturing Demo" );
-
-		// run the application
-		return 0;
     }
-	catch( glsk::unsuccessful )
-	{
-		// Just ignore this, should be handled earlier
-	}
 	catch( std::runtime_error& x )
 	{
-		glsk::error_box( x.what() );
+        return 1;
 	}
+    return 0;
 
-    return 1;
 }

@@ -48,4 +48,7 @@ struct CSphere
 	}
 };
 
+
+double GetTime();
+
 #endif

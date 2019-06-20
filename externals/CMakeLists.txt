@@ -1,4 +1,3 @@
-add_subdirectory(glsk)
 add_subdirectory(replay)
 add_subdirectory(squish)
 
