@@ -5,6 +5,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <sstream>
 #include <replay/vector_math.hpp>
 #include <replay/pixbuf.hpp>
@@ -35,7 +36,7 @@ void AddTriangleNormal( const std::vector<vec3>& Points,
 	vec3 eb=Points[a]-Points[c];
 	vec3 ea=Points[c]-Points[b];
 
-	vec3 Normal = vec3::cross_product( ec, -eb );
+	vec3 Normal = cross( ec, -eb );
 
 	const float Length = magnitude(Normal);
 
@@ -45,9 +46,9 @@ void AddTriangleNormal( const std::vector<vec3>& Points,
 		normalize(eb);
 		normalize(ea);
 
-		float Alpha = std::cos(-(ec|eb));
-		float Beta = std::cos(-(ec|ea));
-		float Gamma = std::cos(-(eb|ea));
+		float Alpha = std::cos(-dot(ec,eb));
+		float Beta = std::cos(-dot(ec,ea));
+		float Gamma = std::cos(-dot(eb,ea));
 
 		Normal /= Length;
 
@@ -203,7 +204,7 @@ void CFantexMesh::BuildBases()
 		vec3 T = replay::math::construct_perpendicular(N);		
 		normalize( T );
 
-		vec3 B = vec3::cross_product(N,T);
+		vec3 B = cross(N,T);
 
 		NormalizedBase[i].u = vec4( T, 0.f );
 		NormalizedBase[i].v = vec4( B, 0.f );		
@@ -319,10 +320,10 @@ void CFantexMesh::ComputeCullCone( size_type VertexIndex )
 
 		vec3 a=Coord[Triangle[1]]-Coord[VertexIndex];
 		vec3 b=Coord[Triangle[2]]-Coord[VertexIndex];
-		vec3 d = vec3::cross_product(a,b);
+		vec3 d = cross(a,b);
 		normalize(d);
 
-		float fd = std::cos(std::acos(vec3::dot_product(d,n))+math::m_pi*0.5f);
+		float fd = std::cos(std::acos(dot(d,n))+boost::math::constants::half_pi<float>());
 		MinCos = std::min( MinCos, fd );
 	}	
 }
@@ -362,8 +363,7 @@ void CFantexMesh::NormalizeRanges()
 
 		CTexgenBase& Base = NormalizedBase[i];
 		// Find the minimal bounding box
-		matrix2 Rotation;
-		Rotation.set_identity();
+        matrix2 Rotation{ 1.f };
 		MinimalAreaBoundingRectangle( &(ProjectedPoints[0]), uint(ProjectedPoints.size()),
 			Rotation, MinRange, MaxRange );
 		PreMultiply( Rotation, Base.u, Base.v );

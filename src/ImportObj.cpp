@@ -8,6 +8,7 @@
 #include <sstream>
 #include <boost/scoped_array.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <replay/vector_math.hpp>
 
 namespace
 {
@@ -51,7 +52,7 @@ namespace
 	};
 	typedef unsigned short uint16;
 	typedef vector3< unsigned int > ivec;
-	typedef std::map< ivec, uint16, ivec::less > LookupT;
+	typedef std::map< ivec, uint16, replay::array_less<3> > LookupT;
 
 	uint16 GetIndex( const ivec& x, LookupT& m, uint16& vc )
 	{

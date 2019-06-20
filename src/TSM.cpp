@@ -125,7 +125,7 @@ TSM::MapTrapezoidToSquare( matrix3& m, const vector2f& t0, const vector2f& t1,
 void
 TSM::MapTrapezoidToSquare( matrix4& m, const replay::vector2f Trapezoid[], const fcouple& DepthRange )
 {
-	matrix3 t;
+    matrix3 t{ 0.f };
 
 	// do the mapping for the 3x3 matrix
 	MapTrapezoidToSquare( t, Trapezoid );
@@ -159,7 +159,7 @@ matrix4 TSM::ComputeWarpingProjection(
 
 	// Compute warp in the shadow plane
 	ComputeTrapezoid( Frustum, Trapezoid, Focus, FocusPerc );
-	matrix3 Warp;
+    matrix3 Warp{ 1.f };
 	MapTrapezoidToSquare( Warp, Trapezoid );
 
 	// find the depth range
@@ -179,7 +179,7 @@ matrix4 TSM::ComputeWarpingProjection(
 	const float ds = -2.f / ( DepthRange[ 1 ] - DepthRange[ 0 ] );
 	const float db = ( DepthRange[ 1 ] + DepthRange[ 0 ] )
 							/( DepthRange[ 1 ] - DepthRange[ 0 ] );
-	matrix4 m;
+	matrix4 m{ 1.f };
 	// this is depth_bias_matrix * warp
 	m.set( Warp(0,0),    Warp(0,1), 0.f,    Warp(0,2),
 		   Warp(1,0),    Warp(1,1), 0.f,    Warp(1,2),
@@ -226,7 +226,7 @@ TSM::ComputeTrapezoid( const boost::array< vec3, 8 >& Frustum, vec2* Trapezoid,
 	vector2f BaseDelta = math::splice2( Center[ 1 ] ) - math::splice2( Center[ 0 ] );
 	float SqrDistance = BaseDelta.squared();
 
-	float ViewDot = math::abs(normalized(Center[1]-Center[0])[2]); // Z coordinate in lightspace
+	float ViewDot = std::abs(normalized(Center[1]-Center[0])[2]); // Z coordinate in lightspace
 
 	if ( SqrDistance < 5.f )
 	{
@@ -264,7 +264,7 @@ TSM::ComputeTrapezoid( const boost::array< vec3, 8 >& Frustum, vec2* Trapezoid,
 			line2 BaseLine( BaseOrigin + (Range[ 0 ]-LineOffset) * BaseDelta, vector2f( -BaseDelta[ 1 ], BaseDelta[ 0 ] ) );
 			line2 TopLine( BaseOrigin + (Range[ 1 ]-LineOffset) * BaseDelta, vector2f( BaseDelta[ 1 ], -BaseDelta[ 0 ] ) );
 
-			float Delta_ = math::abs( dot( math::splice2(PL) - BaseLine.origin, BaseDelta ) );
+			float Delta_ = std::abs( dot( math::splice2(PL) - BaseLine.origin, BaseDelta ) );
 			float Xi = ((FocusPerc * -2.f) + 1.f);
 			float Lambda = Range[ 1 ] - Range[ 0 ];
 			float Nu = Lambda * Delta_ * ( 1 + Xi ) / ( Lambda * ( 1 - Xi ) - 2*Delta_ );
@@ -297,8 +297,8 @@ TSM::ComputeTrapezoid( const boost::array< vec3, 8 >& Frustum, vec2* Trapezoid,
 
 			vector2f TopDir = normalized( TopLine.direction );
 
-			float RightAngle = std::acos( TopDir|normalized(Trapezoid[2]-Trapezoid[1]));
-			float LeftAngle = std::acos( TopDir|normalized(Trapezoid[0]-Trapezoid[3]) );
+			float RightAngle = std::acos( dot(TopDir, normalized(Trapezoid[2]-Trapezoid[1])));
+			float LeftAngle = std::acos( dot(TopDir, normalized(Trapezoid[0]-Trapezoid[3])) );
 
 			// construct a new right border
 			float Cos=std::cos(MinAngle);

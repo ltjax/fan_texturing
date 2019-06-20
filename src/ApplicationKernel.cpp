@@ -29,7 +29,7 @@ namespace {
 
 CApplicationKernel::CApplicationKernel(SDL_Window* Wnd, const boost::filesystem::path& Filename)
     : Window(Wnd), DrawCache(false), Width(1), Height(1), MouseX(0), MouseY(0),
-    CacheScale(1.f / 16.f), ShowWireframe(false), DoDraw(false)
+    CacheScale(1.f / 16.f), Projection{ 1.f }, ShowWireframe(false), DoDraw(false)
 {
     std::cout << "Starting..\n" << std::endl;
 
@@ -150,7 +150,7 @@ void CApplicationKernel::LoadModel(const boost::filesystem::path& Filename,
     // Raw format?
     if (Filename.extension() == ".mesh")
     {
-        typedef replay::ibstream<fs::ifstream> BinaryStream;
+        typedef replay::input_binary_stream BinaryStream;
 
         fs::ifstream _File(Filename, std::ios::binary);
         BinaryStream File(_File);
@@ -405,7 +405,7 @@ void CApplicationKernel::OnIdle()
 {
     double StartTime = GetTime();
 
-    matrix4 View = affinity::inverse(Camera.GetAffinity()).matrix();
+    matrix4 View = to_matrix(inverse(Camera.GetAffinity()));
 
     // Updates pages based on current position and the screen size
     CDisplayData DisplayData(Camera.GetAffinity().position, Projection * View, this->Width, this->Height);
@@ -451,8 +451,7 @@ void CApplicationKernel::OnIdle()
     glDisable(GL_POLYGON_OFFSET_FILL);
     const matrix4 ShadowMatrix = ClipspaceToTexturespaceMatrix * ShadowRenderMatrix;
 #else
-    matrix4 ShadowMatrix;
-    ShadowMatrix.set_identity();
+    matrix4 ShadowMatrix{ 1.f };
 #endif
     GLmm::Framebuffer::Unbind();
     glViewport(0, 0, Width, Height);

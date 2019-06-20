@@ -16,6 +16,7 @@ boost_iostreams/1.69.0@bincrafters/stable
 glew/2.1.0@bincrafters/stable
 libpng/1.6.36@bincrafters/stable
 sdl2/2.0.9@bincrafters/stable
+replay/1.0@ltjax/testing
 
 [options]
 boost:shared=False

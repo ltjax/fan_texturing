@@ -166,7 +166,7 @@ void CTextureWriter::operator()( const boost::filesystem::path& Filename )
 
 	// Namespace and typedefs
 	namespace fs = boost::filesystem;
-	typedef replay::obstream<fs::ofstream> WriteBinary;
+	typedef replay::output_binary_stream WriteBinary;
 	using replay::matrix4;
 	using replay::fcouple;
 

@@ -5,6 +5,7 @@
 #include <boost/assign.hpp>
 #include <boost/filesystem.hpp>
 #include <replay/math.hpp>
+#include <boost/math/constants/constants.hpp>
 
 namespace {
 
@@ -19,7 +20,7 @@ void GenerateSphereModel( int LongitudeDiv, int LatitudeDiv,
 	PointData += vec3(0.f,0.f,1.f);
 	for ( int x=0; x<LongitudeDiv; ++x )
 	{
-		float Yaw = (static_cast<float>(x)/LongitudeDiv)*2.f*replay::math::m_pi;
+		float Yaw = (static_cast<float>(x)/LongitudeDiv)*boost::math::constants::two_pi<float>();
 
 		float px=std::cos(Yaw);
 		float py=std::sin(Yaw);
@@ -27,7 +28,7 @@ void GenerateSphereModel( int LongitudeDiv, int LatitudeDiv,
 		for ( int y=0; y<LatitudeDiv; ++y )
 		{
 			// Relative to the north pole
-			float Angle = ((y+1) / (LatitudeDiv+1.f))*replay::math::m_pi;
+			float Angle = ((y+1) / (LatitudeDiv+1.f))* boost::math::constants::pi<float>();
 			float z = std::cos(Angle);
 			float r = std::sin(Angle);
 

@@ -95,9 +95,9 @@ StateCache::Matrix& StateCache::Matrix::Rotate( const rpl::quaternion& q )
 
 	Angle = std::acos( rpl::math::clamp( q.w, -1.f, 1.f ) ) * 2.f;
 
-	float Sine = std::sqrt( rpl::math::abs( 1.f - ( q.w * q.w ) ) );
+	float Sine = std::sqrt(std::abs( 1.f - ( q.w * q.w ) ) );
 
-	if ( rpl::math::near_zero( Sine ) )
+	if ( rpl::math::fuzzy_zero( Sine ) )
 		Sine = 1.f;
 	else
 		Sine = 1.f / Sine;
@@ -118,7 +118,7 @@ StateCache::Matrix& StateCache::Matrix::InverseRotate( const rpl::quaternion& q 
 
 	float Sine = std::sqrt( 1.f - ( q.w * q.w ) );
 
-	if ( rpl::math::near_zero( Sine ) )
+	if ( rpl::math::fuzzy_zero( Sine ) )
 		Sine = 1.f;
 	else
 		Sine = 1.f / Sine;

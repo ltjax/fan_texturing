@@ -3,6 +3,7 @@
 #include <replay/vector_math.hpp>
 #include <list>
 #include <replay/minimal_sphere.hpp>
+#include <replay/quaternion.hpp>
 
 
 CSphere ApproximateBoundingBall( const std::vector<CSphere>& Input )
@@ -42,18 +43,17 @@ void CDirectionalLight::Setup( vec3 Direction,
 	this->Diffuse = Diffuse;
 		
 	// this is positive because the light direction is directed towards the light
-	const quaternion Rotation = quaternion::shortest_arc( 
+	const quaternion Rotation = shortest_arc(
 		vec3( 0.f, 0.f, 1.f ), 
-		Direction );
+		Direction);
 
-	this->ViewMatrix = matrix4( quaternion::inverse( Rotation ) );
+	this->ViewMatrix = matrix4( inverse( Rotation ) );
 }
 
 CDisplayData::CDisplayData( const vec3& Eyepoint, const replay::matrix4& Scene, int w, int h )
+    : Matrix(Scene)
 {
-	//this->ModelToEye=View;
 	this->WorldEyepoint=Eyepoint;
-	this->Matrix=Scene;
 	replay::math::extract_frustum( Matrix, Frustum.data() );
 	this->w = w;
 	this->h = h;
@@ -142,7 +142,7 @@ std::size_t JarvisMarch( vec2* Vertex, std::size_t n )
 		return n;
 
 	// Find the starting point on the convex hull
-	std::size_t Candidate = std::min_element( Vertex, Vertex+n, vec2::less() ) - Vertex;
+	std::size_t Candidate = std::min_element( Vertex, Vertex+n, replay::array_less<2>() ) - Vertex;
 	std::swap( Vertex[0], Vertex[Candidate] );
 
 	// Find all other points
@@ -212,7 +212,7 @@ public:
 		InitialExtrema();
 
 		// Start with no rotation
-		Current.u.set(1.f,0.f);
+		Current.u= vec2(1.f,0.f);
 		
 		// Check all possible configurations
 		float	MinArea=ComputeSize();
@@ -282,7 +282,7 @@ private:
 		case 1:
 			
 			t = normalized(GetEdge(Right));
-			Current.u.set( -t[1],t[0] );
+			Current.u = vec2( -t[1],t[0] );
 			break;
 		case 2:
 			t = normalized(GetEdge(Top));
@@ -290,7 +290,7 @@ private:
 			break;
 		case 3:
 			t = normalized(GetEdge(Left));
-			Current.u.set( t[1], -t[0] );
+			Current.u = vec2( t[1], -t[0] );
 			break;
 		}
 	}
@@ -305,7 +305,7 @@ private:
 		const vec2& l(P[Left]);
 		const vec2& b(P[Bottom]);
 
-		Current.Min.set(
+		Current.Min = vec2(
 			l[0]*u[0]-l[1]*u[1], // x component of phi(P[Left])
 			b[0]*u[1]+b[1]*u[0] // y component of phi(P[Bottom])
 		);
@@ -314,7 +314,7 @@ private:
 		const vec2& r(P[Right]);
 		const vec2& t(P[Top]);
 
-		Current.Max.set(
+		Current.Max = vec2(
 			r[0]*u[0]-r[1]*u[1],
 			t[0]*u[1]+t[1]*u[0]
 		);
@@ -432,7 +432,7 @@ void MinimalAreaBoundingRectangle( const vec2* ConvexHull, uint n, matrix2& A,
 		vec2 Edge=ConvexHull[(i+1)%n]-ConvexHull[i];
 
 		float Length = magnitude(Edge);
-		if ( replay::math::near_zero(Length) )
+		if ( replay::math::fuzzy_zero(Length) )
 			continue;
 
 		Edge /= Length;

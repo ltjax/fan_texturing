@@ -15,7 +15,7 @@ CSphere ApproximateBoundingBall( const std::vector<CSphere>& Input );
 class CDirectionalLight
 {
 public:
-	CDirectionalLight() {}
+    CDirectionalLight() : ViewMatrix{ 1.f }  {}
 
 	void						Setup( vec3 Direction,
 									   const vec4& Ambient,
@@ -110,7 +110,7 @@ void PreMultiply( const matrix2& Lhs, vec4& Rhs0, vec4& Rhs1 );
 */
 inline vec2 Project( const vec4& x, const vec4& u, const vec4& v )
 {
-	return vec2( x|u, x|v );
+	return vec2( dot(x, u), dot(x, v) );
 }
 
 /** Find the next number that is a multiple of the alignment.

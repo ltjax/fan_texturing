@@ -45,10 +45,10 @@ inline float GetElementCoverage( vec3 Point, const CTexgenBase& Base, const repl
 	// Optimized version of M*(Point|1)
 	const float pw=M[3]*Point[0]+M[7]*Point[1]+M[11]*Point[2]+M[15];
 
-	vec3 U(Base.u.ptr());
+	vec3 U = vec3::cast(Base.u);
 	U *= (1.f/U.squared());
 
-	vec3 V(Base.v.ptr());
+	vec3 V = vec3::cast(Base.v);
 	V *= (1.f/V.squared());
 
 	return std::sqrt(std::max(GetAxisScreenLength(U,M),
@@ -293,7 +293,7 @@ void CFantexRenderer::UpdateOffsets( GLubyte* Target, const CDisplayData& Displa
 	uint TopLevel = IntegerLog(TileSize);
 
 	// Build a model to viewport matrix (with 0,0 at the center)
-	matrix4 ScreenMatrix=matrix4().set_scale(0.5f*DisplayData.w,0.5f*DisplayData.h,1.f)
+	matrix4 ScreenMatrix=matrix4(vec3(0.5f*DisplayData.w,0.5f*DisplayData.h,1.f))
 		* DisplayData.Matrix;
 
 	// Select pages for each vertex
@@ -323,7 +323,7 @@ void CFantexRenderer::UpdateOffsets( GLubyte* Target, const CDisplayData& Displa
 		d /= magnitude(d);
 
 		// Check if we're backfacing
-		if ( vec3::dot_product(Normal[Index],d)<(Mesh.GetMaxAngle(Index)-0.02) )
+		if ( dot(Normal[Index],d)<(Mesh.GetMaxAngle(Index)-0.02) )
 			continue;
 
 		// Compute the coverage

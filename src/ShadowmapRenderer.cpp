@@ -13,7 +13,7 @@ namespace {
 };
 
 CShadowmapRenderer::CShadowmapRenderer( const CFantexMesh& Mesh, const CDirectionalLight& Light, uint TextureSize )
-: Light( Light )
+: Light( Light ), ShadowMatrix(1.f)
 {
 	// Copy basic triangle mesh data
 	VertexBuffer.SetData( GL_ARRAY_BUFFER, Mesh.GetCoordVector(), GL_STATIC_DRAW );

@@ -1,4 +1,3 @@
-add_subdirectory(replay)
 add_subdirectory(squish)
 
 add_library(threadpool INTERFACE)

@@ -63,7 +63,6 @@ add_executable(fan_texturing_demo WIN32
 
 
 target_link_libraries(fan_texturing_demo
-  PUBLIC replay
   PUBLIC threadpool
   PUBLIC squish
   PUBLIC CONAN_PKG::glew
@@ -76,6 +75,7 @@ target_link_libraries(fan_texturing_demo
   PUBLIC CONAN_PKG::boost_asio
   PUBLIC CONAN_PKG::boost_graph
   PUBLIC CONAN_PKG::boost_iostreams
+  PUBLIC CONAN_PKG::replay
   PUBLIC CONAN_PKG::sdl2)
 
 target_compile_options(fan_texturing_demo

@@ -118,7 +118,7 @@ public:
 inline
 StateCache::Matrix::operator rpl::matrix4() const
 {
-	rpl::matrix4 Result;
+    rpl::matrix4 Result{ 0 };
 	ExtractTo( Result );
 	return Result;
 }

@@ -1,6 +1,7 @@
 
 #include "UserCamera.hpp"
 #include <replay/math.hpp>
+#include <boost/math/constants/constants.hpp>
 
 CUserCamera::CUserCamera()
 : MoveIndex(0)
@@ -36,7 +37,7 @@ CUserCamera::OnMouseButton( int px, int py, int Index, int Value )
 	else if ( !Value && MoveIndex==Action ) // only disable the one that is active
 		MoveIndex = 0;
 
-	LastMouse.set(px,py);
+    LastMouse = { px,py };
 }
 
 void
@@ -54,8 +55,8 @@ CUserCamera::OnMouseMove( int px, int py )
 	}
 	else if ( MoveIndex == 3 )
 	{
-		const quaternion Prefix( math::m_pi*0.5f, vec3( 1.f, 0.f, 0.f ) );
-		const quaternion InvPrefix = quaternion::inverse( Prefix );
+		const quaternion Prefix( boost::math::constants::half_pi<float>(), vec3( 1.f, 0.f, 0.f ) );
+		const quaternion InvPrefix = inverse( Prefix );
 
 		const float RotateSpeed = 0.005f;
 		

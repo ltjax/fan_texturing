@@ -39,8 +39,7 @@ void CFanDrawer::Draw( uint Index )
 	glClearColor(0.f,0.f,0.f,0.f);
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	matrix4 View;
-	View.set_identity();
+    matrix4 View{ 1.f };
 
 	const vec4& u = NormalizedBase[Index].u;
 	const vec4& v = NormalizedBase[Index].v;
@@ -124,7 +123,7 @@ void CFanDrawer::FillVertexBuffer( uint Index, GLubyte* Target )
 		const vec2 pbc = Project(vec4(c-b,0.f),u,v);
 
 		float LengthC = magnitude(pba);
-		float Beta = std::acos((pba|normalized(pbc))/LengthC);
+		float Beta = std::acos(dot(pba,normalized(pbc))/LengthC);
 		float Height = std::sin(Beta)*LengthC;
 
 		float Factor = std::max( Sqrt2/Height,1.f );
